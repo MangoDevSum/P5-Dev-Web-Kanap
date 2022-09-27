@@ -34,10 +34,13 @@ async function remplir_accueil() {
     // Astuce: utiliser jqplay.org pour expérimenter
     function convertir_produits_en_html(produits) {
         // let i = 0;
-        // let s = "";
         // for ... {
         //     i = i + 1;
         //     i += 1;
+        // }
+        //
+        // let s = "";
+        // for ... {
         //     s = s + "un truc";
         //     s += "un truc";
         // }
