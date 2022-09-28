@@ -52,7 +52,6 @@ async function remplir_accueil() {
         return html_de_tous_les_produits;
     }
 
-        // TODO
         function convertir_produit_en_html(produit) {
             const src = produit["imageUrl"];
             const h3 = produit["name"];
