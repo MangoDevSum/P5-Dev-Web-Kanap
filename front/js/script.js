@@ -59,7 +59,7 @@ async function remplir_accueil() {
             const alt = produit["altTxt"];
             const p = produit["description"];
             return `
-                <a href="./product.html?${id}">
+                <a href="./product.html?id=${id}">
                     <article>
                         <img
                             src="${src}"
