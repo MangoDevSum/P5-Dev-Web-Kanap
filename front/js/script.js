@@ -24,7 +24,8 @@ async function remplir_accueil() {
             */
             const response = await fetch(`http://localhost:3000/api/products/`);
             // const response = await fetch(`http://localhost:3000/api/products/${id}`);
-            return await response.text();
+            const texte = await response.text();
+            return texte;
         }
 
         function extraire_jsons(api_products_str) {
@@ -88,7 +89,7 @@ async function remplir_accueil() {
 
 
 //appel à la fonction main (normal)
-// main();
+// await main();
 
 // appel à la fonction main mais que quand la page a été chargée.
 // (code trouvé sur internet).
