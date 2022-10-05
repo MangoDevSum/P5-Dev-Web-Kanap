@@ -4,9 +4,7 @@ async function main() {
 
 async function remplir_produit() {
     const id_produit = obtenir_id();
-    console.log(id_produit);
     const donnees = await recuperer_produit(id_produit);
-    console.log(donnees);
     inserer_donnees_dans_html(donnees);
 }
 
