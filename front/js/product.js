@@ -25,53 +25,40 @@ async function recuperer_produit(id_produit) {
 }
 
 function inserer_donnees_dans_html(produit) {
-    /* == COURS == */
-    let nom;
-    // pt de vue objet. On accède à une propriété/attribut. Syntaxe: .name
-    nom = produit.name; // plus épuré
-    // pt de vue dictionnaire (a map). On indexe par clé "string". Syntaxe: ["name"]
-    nom = produit["name"]; // plus flexible
-
-    // "comme en CSS/HTML"
-    document.querySelector(".nom-de-classe")
-    document.querySelector("#nom-de-id")
-
-    // for (const color of produit.colors) {
-    //     document... += `
-    //         <option ...>
-    //     `;
-    // }
-
-    /* == CODE == */
     // <div class="item__img">
     //     <!-- <img src="../images/logo.png" alt="Photographie d'un canapé"> -->
     // </div>
-    document.querySelector(".item__img").innerHTML = `
-        <img src="${produit.imageUrl}" alt="${produit.altTxt}">
-    `;
-
-    document.querySelector("#title").innerText = `
-        ${produit.name}
-    `;
-
-    document.querySelector("#price").innerText = `
-        ${produit.price}
-    `;
-
-    document.querySelector("#description").innerText = `
-        ${produit.description}
-    `;
+    document.querySelector(".item__img").innerHTML =
+        `<img src="${produit.imageUrl}" alt="${produit.altTxt}">`
+    ;
 
     // <h1 id="title">
     //     <!-- Nom du produit -->
     // </h1>
+    document.querySelector("#title").innerText =
+        `${produit.name}`
+    ;
 
-    //boucle for
-    // document.querySelector("").innerText = `
+    // <p>Prix : <span id="price"><!-- 42 --></span>€</p>
+    document.querySelector("#price").innerText =
+        `${produit.price}`
+    ;
 
-    // `;
+    // <p id="description"><!-- Dis enim malesuada risus sapien gravida nulla nisl arcu. --></p>
+    document.querySelector("#description").innerText =
+        `${produit.description}`
+    ;
 
-
+    // <select name="color-select" id="colors">
+    //     <option value="">--SVP, choisissez une couleur --</option>
+    //     <!-- <option value="vert">vert</option>
+    //          <option value="blanc">blanc</option> -->
+    // </select>
+    for(const couleur of produit.colors) {
+        document.querySelector("#colors").innerHTML +=
+            `<option value="${couleur}">${couleur}</option>`
+        ;
+    }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
