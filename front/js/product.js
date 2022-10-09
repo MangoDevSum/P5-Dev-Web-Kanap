@@ -26,9 +26,10 @@ function inserer_donnees_dans_html(produit) {
     // <div class="item__img">
     //     <!-- <img src="../images/logo.png" alt="Photographie d'un canapé"> -->
     // </div>
-    document.querySelector(".item__img").innerHTML =
-        `<img src="${produit.imageUrl}" alt="${produit.altTxt}">`
-    ;
+    const img = document.createElement("img");
+    img.src = produit.imageUrl;
+    img.qlt = produit.altTxt;
+    document.querySelector(".item__img").appendChild(img);
 
     // <h1 id="title">
     //     <!-- Nom du produit -->
@@ -52,10 +53,18 @@ function inserer_donnees_dans_html(produit) {
     //     <!-- <option value="vert">vert</option>
     //          <option value="blanc">blanc</option> -->
     // </select>
-    for(const couleur of produit.colors) {
+    /* for(const couleur of produit.colors) {
         document.querySelector("#colors").innerHTML +=
             `<option value="${couleur}">${couleur}</option>`
         ;
+    // } */
+
+    for(const couleur of produit.colors) {
+        const option = document.createElement("option");
+        option.value = couleur;
+        option.innerText = couleur;
+
+        document.querySelector("#colors").appendChild(option);
     }
 }
 
