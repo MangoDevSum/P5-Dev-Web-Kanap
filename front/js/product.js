@@ -86,3 +86,34 @@ function ajouter_au_panier() {
 document.addEventListener("DOMContentLoaded", async () => {
     await main();
 }, false);
+
+/*
+- 🔲 Panier partie 1 — ajouter au panier:
+     - ☑ récupérer infos du produit lors du clic
+     - 🔲 fonction pour insérer des infos produit dans le panier
+  -  🔲 Panier partie 2 - afficher le panier:
+     - 🔲 récupérer infos du panier (très facile)
+     - 🔲 les afficher (un peu fastidieux, mais pas difficile (createElement, append, etc.)
+     - 🔲 au niveau de l'affichage de ce panier, permettre des modifs ultérieures ("supprimer l'élément ou modifier la quantité")
+
+Stocker:
+
+localStorage.panier = JSON.stringify(mon_nouveau_panier);
+
+Récupérer:
+
+const panier = JSON.parse(localStorage.panier || "{}");
+
+
+La subtilité étant qu'au moment ou l'on veut rajouter au panier qqch (et non pas remplacer le panier par qqch), la partie "insérer dans le panier" va donc, techniquement, inclure une lecture préalable:
+
+// on récupère l'object
+const panier_actuel = JSON.parse(localStorage.panier || "{}");
+
+// on lui rajoute des trucs
+const nouveau_panier = ajouter(panier_actuel, nouveaux_trucs);
+
+// on remplace l'ancien par le nouveau:
+localStorage.panier = JSON.stringify(mon_nouveau_panier);
+
+*/
