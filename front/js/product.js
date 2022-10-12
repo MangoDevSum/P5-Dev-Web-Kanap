@@ -61,6 +61,25 @@ function ajouter_listener() {
 }
 
 function ajouter_au_panier() {
+    // .value : On obtient ce qu' il y a à l'intérieur de la case, /!\ sous forme de string /!\
+    const nbre_articles_str = $("#quantity").value;
+    const nbre_articles = parseInt(nbre_articles_str);
+    if (nbre_articles == 0) {
+        alert("Veuillez choisir le nombre d'articles à ajouter.");
+        return;
+    }
+    console.log("nbre_articles:", nbre_articles);
+
+    const choix_couleurs = $("#colors");
+    if (choix_couleurs.selectedIndex == 0) {
+        // On est encore à "SVP choisissez une couleur": on n'envoie rien.
+        alert("Veuillez choisir une couleur.");
+        return;
+    }
+    // Formule pour obtenir le string dans un choix déroulant (select).
+    const couleur = choix_couleurs.options[choix_couleurs.selectedIndex].value;
+    console.log("couleur:", couleur);
+
     alert("TODO");
 }
 
