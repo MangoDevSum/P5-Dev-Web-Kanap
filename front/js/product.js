@@ -57,10 +57,16 @@ async function remplir_produit() {
     }
 
 function ajouter_listener() {
-    $("#addToCart").addEventListener("click", ajouter_au_panier);
+    $("#addToCart").addEventListener("click", gerer_clic_panier);
 }
 
-function ajouter_au_panier() {
+// On ne peut pas vraiment ajouter des paramètres à nous car c'est un "event listener".
+function gerer_clic_panier() {
+    // Par exemple, on ne peut hélas pas passer le `id_produit` comme argument, du coup il nous faut
+    // le réobtenir comme nous l'avions déjà fait ligne ~12.
+    const id_produit = obtenir_id();
+    console.log("id_produit:", id_produit);
+
     // .value : On obtient ce qu' il y a à l'intérieur de la case, /!\ sous forme de string /!\
     const nbre_articles_str = $("#quantity").value;
     const nbre_articles = parseInt(nbre_articles_str);
@@ -80,40 +86,76 @@ function ajouter_au_panier() {
     const couleur = choix_couleurs.options[choix_couleurs.selectedIndex].value;
     console.log("couleur:", couleur);
 
-    alert("TODO");
+    // Attention, quand on appelle une fonction avec plusieurs arguments/paramètres,
+    // il faut garder le même ordre /!\
+    maj_du_local_storage_panier(couleur, id_produit, nbre_articles);
+
+    // Pour finir, on redirige vers la page du panier:
+    window.location = "./cart.html";
 }
+
+    function maj_du_local_storage_panier(couleur, id_produit, nbre_articles) {
+        // Utilisation de localStorage:
+
+        // 1. On récupère l'objet à déstringifier ("if any" / si jamais il y en un)
+        let panier_actuel;
+            // Est-ce que le panier existe déjà ?
+            if (localStorage.panier != undefined) { // Si oui,
+                // on le récupère en le "dé-stringifiant"
+                panier_actuel = JSON.parse(localStorage.panier);
+            } else { // sinon,
+                // on se fait un tout nouveau panier vide ({} == objet vide, [] == tableau vide).
+                panier_actuel = [];
+            }
+
+        // 2. On lui rajoute des trucs
+        const nouveau_panier = ajouter_au_panier(panier_actuel, id_produit, couleur, nbre_articles);
+
+        // 3. On stocke le nouveau panier (stringifié) à la place.
+        localStorage.panier = JSON.stringify(nouveau_panier);
+    }
+
+    function ajouter_au_panier(panier, notre_id_produit, notre_couleur, nbre_articles) {
+
+        let position = -1;
+        for (const [i, element] of Object.entries(panier)) {
+            if (element.id_produit == notre_id_produit && element.couleur == notre_couleur) {
+                position = i;
+                break;
+            }
+        }
+        // Ou bien:
+        {
+            const position = panier.findIndex(element => {
+                return element.id_produit == notre_id_produit && element.couleur == notre_couleur;
+            });
+        }
+
+        if (position == -1) {
+            panier.push({
+                id_produit: notre_id_produit,
+                couleur: notre_couleur,
+                quantite: nbre_articles,
+            });
+        } else {
+            panier[position].quantite += nbre_articles;
+        }
+
+        return panier;
+    }
 
 document.addEventListener("DOMContentLoaded", async () => {
     await main();
 }, false);
 
 /*
-- 🔲 Panier partie 1 — ajouter au panier:
+- ☑ Panier partie 1 — ajouter au panier:
      - ☑ récupérer infos du produit lors du clic
-     - 🔲 fonction pour insérer des infos produit dans le panier
+     - ☑ fonction pour insérer des infos produit dans le panier
   -  🔲 Panier partie 2 - afficher le panier:
-     - 🔲 récupérer infos du panier (très facile)
-     - 🔲 les afficher (un peu fastidieux, mais pas difficile (createElement, append, etc.)
+     - ☑ récupérer infos du panier (très facile)
+     - ☑ les afficher (un peu fastidieux, mais pas difficile (createElement, append, etc.)
+        - 🔲 utiliser createElement à la place de innerHTML
+        - 🔲 mettre à jour aussi le prix et quantités totaux.
      - 🔲 au niveau de l'affichage de ce panier, permettre des modifs ultérieures ("supprimer l'élément ou modifier la quantité")
-
-Stocker:
-
-localStorage.panier = JSON.stringify(mon_nouveau_panier);
-
-Récupérer:
-
-const panier = JSON.parse(localStorage.panier || "{}");
-
-
-La subtilité étant qu'au moment ou l'on veut rajouter au panier qqch (et non pas remplacer le panier par qqch), la partie "insérer dans le panier" va donc, techniquement, inclure une lecture préalable:
-
-// on récupère l'object
-const panier_actuel = JSON.parse(localStorage.panier || "{}");
-
-// on lui rajoute des trucs
-const nouveau_panier = ajouter(panier_actuel, nouveaux_trucs);
-
-// on remplace l'ancien par le nouveau:
-localStorage.panier = JSON.stringify(mon_nouveau_panier);
-
 */
