@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   -  🔲 Panier partie 2 - afficher le panier:
      - ☑ récupérer infos du panier (très facile)
      - ☑ les afficher (un peu fastidieux, mais pas difficile (createElement, append, etc.)
-        - 🔲 utiliser createElement à la place de innerHTML
+        - ☑ utiliser createElement à la place de innerHTML
         - 🔲 mettre à jour aussi le prix et quantités totaux.
      - 🔲 au niveau de l'affichage de ce panier, permettre des modifs ultérieures ("supprimer l'élément ou modifier la quantité")
 */
