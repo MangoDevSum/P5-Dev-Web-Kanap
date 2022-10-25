@@ -34,14 +34,14 @@ async function recuperer_produit(id_produit) {
 async function remplir_html_panier(panier) {
   // let total_articles = 0;
   // let prix_total = 0;
-  // const elements_panier = []
   for (const { id_produit, couleur, quantite } of panier) {
     console.log("id_produit:", id_produit);
     console.log("couleur:", couleur);
     console.log("quantité:", quantite);
     const produit = await recuperer_produit(id_produit);
     console.log("produit:", produit);
-    inserer_article(produit, couleur, quantite);
+    const article = fabriquer_article(produit, couleur, quantite);
+    $("#cart__items").append(article);
   }
 }
 
@@ -66,7 +66,7 @@ async function remplir_html_panier(panier) {
     </div>
   </div>
 </article> */
-function inserer_article(produit, couleur, quantite) {
+function fabriquer_article(produit, couleur, quantite) {
   const prix_en_euros =
     Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' })
       .format(produit.price)
@@ -121,7 +121,7 @@ function inserer_article(produit, couleur, quantite) {
             p4.append("Supprimer");
           div6.append(p4);
     article.append(div2);
-  $("#cart__items").append(article);
+  return article;
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
