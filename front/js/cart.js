@@ -32,14 +32,26 @@ async function recuperer_produit(id_produit) {
 }
 
 async function remplir_html_panier(panier /*: ElementPanier[] */) {
+  let total_articles = 0;
+  let prix_total = 0;
   const articles = [];
   for (const element/* : ElementPanier */ of panier) {
     const produit = await recuperer_produit(element.id_produit);
 
     const article = fabriquer_article(produit, element.couleur, element.quantite);
     articles.push(article);
+
+    total_articles += element.quantite;
+    prix_total += (produit.price * element.quantite);
   }
   $("#cart__items").replaceChildren(...articles);
+
+  $("#totalQuantity").innerText = total_articles;
+  const prix_virgule =
+    Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      .format(prix_total)
+  ;
+  $("#totalPrice").innerText = prix_virgule;
 }
 
 /* <article class="cart__item" data-id="{product-ID}" data-color="{product-color}">
