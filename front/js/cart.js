@@ -1,5 +1,5 @@
 async function main() {
-  const panier = obtenir_panier();
+  const panier = obtenir_local_storage_panier();
   await remplir_html_panier(panier);
 }
 
@@ -8,7 +8,7 @@ function $(s) {
   return document.querySelector(s);
 }
 
-function obtenir_panier() {
+function obtenir_local_storage_panier() {
 /*
   let panier_actuel;
     // Est-ce que le panier existe déjà ?
@@ -128,9 +128,29 @@ function fabriquer_article(produit, couleur, quantite) {
             const p4 = document.createElement("p");
             p4.setAttribute("class", "deleteItem");
             p4.append("Supprimer");
+            p4.addEventListener(
+              "click",
+              // Fonction "inlinée" pour qu'elle ait accès aux
+              // variables ci-présentes / "in scope" (par ex: couleur).
+              async () => {
+                await supprimer_element_panier(couleur, produit._id);
+              },
+            )
           div6.append(p4);
     article.append(div2);
   return article;
+}
+
+async function supprimer_element_panier(notre_couleur,notre_id_produit) {
+  const panier/*: ElementPanier[] */ = obtenir_local_storage_panier();
+  for (const i in panier) {
+    if (panier[i].id_produit == notre_id_produit && panier[i].couleur == notre_couleur) {
+      // delete panier[i]; /* panier[i] = null; */
+      panier.splice(i, 1);
+    }
+  }
+  localStorage.panier = JSON.stringify(panier);
+  await main();
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
