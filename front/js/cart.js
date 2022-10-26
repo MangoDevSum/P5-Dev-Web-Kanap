@@ -121,6 +121,10 @@ function fabriquer_article(produit, couleur, quantite) {
             input.setAttribute("min", "1");
             input.setAttribute("max", "100");
             input.setAttribute("value", quantite);
+            input.addEventListener("change", async (evenement) => {
+              const nouvelle_qte = parseInt(evenement.target.value);
+              await changer_qte_element_panier(couleur, produit._id, nouvelle_qte);
+            })
           div5.append(input);
           const div6 = document.createElement("div");
           div6.setAttribute("class", "cart__item__content__settings__delete");
@@ -147,6 +151,17 @@ async function supprimer_element_panier(notre_couleur,notre_id_produit) {
     if (panier[i].id_produit == notre_id_produit && panier[i].couleur == notre_couleur) {
       // delete panier[i]; /* panier[i] = null; */
       panier.splice(i, 1);
+    }
+  }
+  localStorage.panier = JSON.stringify(panier);
+  await main();
+}
+
+async function changer_qte_element_panier(notre_couleur, notre_id_produit, nouvelle_qte) {
+  const panier/*: ElementPanier[] */ = obtenir_local_storage_panier();
+  for (const element/*: ElementPanier */ of panier) {
+    if (element.id_produit == notre_id_produit && element.couleur == notre_couleur) {
+      element.quantite = nouvelle_qte;
     }
   }
   localStorage.panier = JSON.stringify(panier);
