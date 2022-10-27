@@ -154,7 +154,7 @@ async function supprimer_element_panier(notre_couleur,notre_id_produit) {
     }
   }
   localStorage.panier = JSON.stringify(panier);
-  await main();
+  await remplir_html_panier(panier);
 }
 
 async function changer_qte_element_panier(notre_couleur, notre_id_produit, nouvelle_qte) {
@@ -165,7 +165,7 @@ async function changer_qte_element_panier(notre_couleur, notre_id_produit, nouve
     }
   }
   localStorage.panier = JSON.stringify(panier);
-  await main();
+  await remplir_html_panier(panier);
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
