@@ -1,6 +1,7 @@
 async function main() {
   const panier = obtenir_local_storage_panier();
   await remplir_html_panier(panier);
+  listeners_formulaire();
 }
 
 // Raccourci pratique.
@@ -166,6 +167,87 @@ async function changer_qte_element_panier(notre_couleur, notre_id_produit, nouve
   }
   localStorage.panier = JSON.stringify(panier);
   await remplir_html_panier(panier);
+}
+
+function listeners_formulaire() {
+  const formulaire = $(".cart__order__form");
+  formulaire.addEventListener("submit", gerer_submit_formulaire);
+}
+
+function gerer_submit_formulaire(evenement) {
+  const infos = lire_infos_formulaire();
+  console.log(infos);
+  console.log(infos.prenom);
+
+  const regle_prenom_ou_nom = /^[^0-9]+$/;
+  const regle_adresse_ou_ville = /^.+$/;
+  const regle_email = /^[a-z0-9\._]+@[a-z]+\.[a-z]+$/i;
+
+  const prenom_est_valide = regle_prenom_ou_nom.test(infos.prenom);
+  console.log("prenom_est_valide", prenom_est_valide);
+  if (prenom_est_valide == false) {
+    $("#firstNameErrorMsg").innerText = "Veuillez écrire un prénom valide";
+  } else {
+    $("#firstNameErrorMsg").innerText = "";
+  }
+
+  const nom_est_valide = regle_prenom_ou_nom.test(infos.nom);
+  console.log("nom_est_valide", nom_est_valide);
+  if (nom_est_valide == false) {
+    $("#lastNameErrorMsg").innerText = "Veuillez écrire un nom valide";
+  } else {
+    $("#lastNameErrorMsg").innerText = "";
+  }
+
+  const adresse_est_valide = regle_adresse_ou_ville.test(infos.adresse);
+  console.log("adresse_est_valide", adresse_est_valide);
+  if (adresse_est_valide == false) {
+    $("#addressErrorMsg").innerText = "Veuillez fournir une adresse";
+  } else {
+    $("#addressErrorMsg").innerText = "";
+  }
+
+  const ville_est_valide = regle_adresse_ou_ville.test(infos.ville);
+  console.log("ville_est_valide", ville_est_valide);
+  if (ville_est_valide == false) {
+    $("#cityErrorMsg").innerText = "Veuillez fournir une ville";
+  } else {
+    $("#cityErrorMsg").innerText = "";
+  }
+
+  const email_est_valide = regle_email.test(infos.email);
+  console.log("email_est_valide", email_est_valide);
+  if (email_est_valide == false) {
+    $("#emailErrorMsg").innerText = "Veuillez écrire une adresse email valide";
+  } else {
+    $("#emailErrorMsg").innerText = "";
+  }
+
+  if (true
+    && prenom_est_valide
+    && nom_est_valide
+    && adresse_est_valide
+    && ville_est_valide
+    && email_est_valide
+  )
+  {
+    // Tout est bon!
+  } else {
+    // Empêcher le submit de "go through" / s'effectuer.
+    evenement.preventDefault();
+  }
+}
+
+function lire_infos_formulaire() {
+  const infos_contact = {
+    prenom: $("#firstName").value,
+    nom: $("#lastName").value,
+    adresse: $("#address").value,
+    ville: $("#city").value,
+    email: $("#email").value,
+  };
+
+  return infos_contact;
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
