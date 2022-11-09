@@ -174,16 +174,16 @@ function listeners_formulaire() {
   formulaire.addEventListener("submit", gerer_submit_formulaire);
 }
 
-function gerer_submit_formulaire(evenement) {
-  const infos = lire_infos_formulaire();
-  console.log(infos);
-  console.log(infos.prenom);
+async function gerer_submit_formulaire(evenement) {
+  const infos_formulaire = lire_infos_formulaire();
+  console.log(infos_formulaire);
+  console.log(infos_formulaire.firstName);
 
   const regle_prenom_ou_nom = /^[^0-9]+$/;
   const regle_adresse_ou_ville = /^.+$/;
   const regle_email = /^[a-z0-9\._]+@[a-z]+\.[a-z]+$/i;
 
-  const prenom_est_valide = regle_prenom_ou_nom.test(infos.prenom);
+  const prenom_est_valide = regle_prenom_ou_nom.test(infos_formulaire.firstName);
   console.log("prenom_est_valide", prenom_est_valide);
   if (prenom_est_valide == false) {
     $("#firstNameErrorMsg").innerText = "Veuillez écrire un prénom valide";
@@ -191,7 +191,7 @@ function gerer_submit_formulaire(evenement) {
     $("#firstNameErrorMsg").innerText = "";
   }
 
-  const nom_est_valide = regle_prenom_ou_nom.test(infos.nom);
+  const nom_est_valide = regle_prenom_ou_nom.test(infos_formulaire.lastName);
   console.log("nom_est_valide", nom_est_valide);
   if (nom_est_valide == false) {
     $("#lastNameErrorMsg").innerText = "Veuillez écrire un nom valide";
@@ -199,7 +199,7 @@ function gerer_submit_formulaire(evenement) {
     $("#lastNameErrorMsg").innerText = "";
   }
 
-  const adresse_est_valide = regle_adresse_ou_ville.test(infos.adresse);
+  const adresse_est_valide = regle_adresse_ou_ville.test(infos_formulaire.address);
   console.log("adresse_est_valide", adresse_est_valide);
   if (adresse_est_valide == false) {
     $("#addressErrorMsg").innerText = "Veuillez fournir une adresse";
@@ -207,7 +207,7 @@ function gerer_submit_formulaire(evenement) {
     $("#addressErrorMsg").innerText = "";
   }
 
-  const ville_est_valide = regle_adresse_ou_ville.test(infos.ville);
+  const ville_est_valide = regle_adresse_ou_ville.test(infos_formulaire.city);
   console.log("ville_est_valide", ville_est_valide);
   if (ville_est_valide == false) {
     $("#cityErrorMsg").innerText = "Veuillez fournir une ville";
@@ -215,7 +215,7 @@ function gerer_submit_formulaire(evenement) {
     $("#cityErrorMsg").innerText = "";
   }
 
-  const email_est_valide = regle_email.test(infos.email);
+  const email_est_valide = regle_email.test(infos_formulaire.email);
   console.log("email_est_valide", email_est_valide);
   if (email_est_valide == false) {
     $("#emailErrorMsg").innerText = "Veuillez écrire une adresse email valide";
@@ -232,6 +232,12 @@ function gerer_submit_formulaire(evenement) {
   )
   {
     // Tout est bon!
+    const panier = obtenir_local_storage_panier();
+    evenement.preventDefault();
+    const donnees = await passer_commande(infos_formulaire, panier);
+    console.log("donnees:", donnees.orderId);
+    window.location = `./confirmation.html?commande=${donnees.orderId}`;
+
   } else {
     // Empêcher le submit de "go through" / s'effectuer.
     evenement.preventDefault();
@@ -239,15 +245,48 @@ function gerer_submit_formulaire(evenement) {
 }
 
 function lire_infos_formulaire() {
-  const infos_contact = {
-    prenom: $("#firstName").value,
-    nom: $("#lastName").value,
-    adresse: $("#address").value,
-    ville: $("#city").value,
+  const contact = {
+    firstName: $("#firstName").value,
+    lastName: $("#lastName").value,
+    address: $("#address").value,
+    city: $("#city").value,
     email: $("#email").value,
   };
 
-  return infos_contact;
+  return contact;
+}
+
+async function json_fetch(...args) {
+  const debut_reponse = await fetch(...args);
+  const donnees = await debut_reponse.json();
+  return donnees;
+}
+
+async function passer_commande_post(commande_body) {
+  const donnees = await json_fetch(
+    'http://localhost:3000/api/products/order',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+      },
+      body: JSON.stringify(commande_body),
+    },
+  );
+  return donnees;
+}
+
+async function passer_commande(infos_formulaire, panier) {
+    const products = [];
+    for (const element_panier of panier) {
+        // Formulaire ignore couleur, voire quantité ????
+        products.push(element_panier.id_produit);
+    }
+    const donnees = await passer_commande_post({
+        contact: infos_formulaire,
+        products: products,
+    });
+    return donnees;
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
