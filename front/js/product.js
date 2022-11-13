@@ -1,12 +1,10 @@
+import * as util from "./utilitaires.js"
+import { $ } from "./utilitaires.js"
+
 async function main() {
     ajouter_listener();
     await remplir_produit();
 }
-
-    // Raccourci pratique.
-    function $(s) {
-        return document.querySelector(s);
-    }
 
 async function remplir_produit() {
     const id_produit = obtenir_id();
@@ -15,16 +13,11 @@ async function remplir_produit() {
 }
 
     function obtenir_id() {
-        const str = window.location.href;
-        const url = new URL(str);
-        const id_produit = url.searchParams.get("id");
-        return id_produit;
+        return util.get_url_param("id");
     }
 
     async function recuperer_produit(id_produit) {
-        const response = await fetch(`http://localhost:3000/api/products/${id_produit}`);
-        const donnees = await response.json();
-        return donnees;
+        return await util.api_get(`/${id_produit}`);
     }
 
     function inserer_donnees_dans_html(produit) {

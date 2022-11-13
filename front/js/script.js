@@ -1,8 +1,12 @@
+import * as util from "./utilitaires.js"
+import { $ } from "./utilitaires.js"
+
 // définir une fonction main (on l'appellera en fin de fichier)
 async function main() {
     await remplir_accueil();
 }
 
+// Afficher l'ensemble des produits
 async function remplir_accueil() {
     const produits = await obtenir_produits();
     const html = convertir_produits_en_html(produits);
@@ -10,21 +14,8 @@ async function remplir_accueil() {
 }
 
     async function obtenir_produits() {
-        // api_products_str est un string brut, résultat de la requête HTTP
-        const api_produits_str = await querir_api_products();
-        const produits = extraire_jsons(api_produits_str);
-        return produits;
+        return await util.api_get('/');
     }
-
-        async function querir_api_products() {
-            const response = await fetch(`http://localhost:3000/api/products/`);
-            const texte = await response.text();
-            return texte;
-        }
-
-        function extraire_jsons(api_products_str) {
-            return JSON.parse(api_products_str);
-        }
 
     // Astuce: utiliser jqplay.org pour expérimenter
     function convertir_produits_en_html(produits) {
@@ -64,7 +55,7 @@ async function remplir_accueil() {
         }
 
     function inserer_html_dans_accueil(html_de_tous_les_produits) {
-        const section_items = document.querySelector("#items");
+        const section_items = $("#items");
         for (const a of html_de_tous_les_produits) {
             section_items.append(a);
         }
