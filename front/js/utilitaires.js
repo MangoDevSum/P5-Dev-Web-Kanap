@@ -37,8 +37,21 @@ export async function api_post(cible_api, objet_a_envoyer) {
   );
 }
 
-export function get_url_param(nom_du_parametre) {
+export function recuperer_url_param(nom_du_parametre) {
   const str = window.location.href;
   const url = new URL(str);
   return url.searchParams.get(nom_du_parametre);
+}
+
+export function recuperer_local_storage_panier() {
+  let panier_actuel;
+  // Est-ce que le panier existe déjà ?
+  if (localStorage.panier != undefined) { // Si oui,
+    // on le récupère en le "dé-stringifiant"
+    panier_actuel = JSON.parse(localStorage.panier);
+  } else { // sinon,
+    // on se fait un tout nouveau panier vide ({} == objet vide, [] == tableau vide).
+    panier_actuel = [];
+  }
+  return panier_actuel;
 }

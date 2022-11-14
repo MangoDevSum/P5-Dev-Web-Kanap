@@ -2,27 +2,10 @@ import * as util from "./utilitaires.js"
 import { $ } from "./utilitaires.js"
 
 async function main() {
-  const panier = obtenir_local_storage_panier();
+  const panier = util.recuperer_local_storage_panier();
   await remplir_html_panier(panier);
   listeners_formulaire();
 }
-
-  function obtenir_local_storage_panier() {
-  /*
-    let panier_actuel;
-      // Est-ce que le panier existe déjà ?
-      if (localStorage.panier != undefined) { // Si oui,
-          // on le récupère en le "dé-stringifiant"
-          panier_actuel = JSON.parse(localStorage.panier);
-      } else { // sinon,
-          // on se fait un tout nouveau panier vide ({} == objet vide).
-          panier_actuel = [];
-        // panier_actuel = new Object(); // alternative
-      }
-    return panier_actuel;
-  */
-    return JSON.parse(localStorage.panier ?? "[]");
-  }
 
   async function remplir_html_panier(panier /*: ElementPanier[] */) {
     let total_articles = 0;
@@ -145,7 +128,7 @@ async function main() {
     }
 
       async function changer_qte_element_panier(notre_couleur, notre_id_produit, nouvelle_qte) {
-        const panier/*: ElementPanier[] */ = obtenir_local_storage_panier();
+        const panier/*: ElementPanier[] */ = util.recuperer_local_storage_panier();
         for (const element/*: ElementPanier */ of panier) {
           if (element.id_produit == notre_id_produit && element.couleur == notre_couleur) {
             element.quantite = nouvelle_qte;
@@ -156,7 +139,7 @@ async function main() {
       }
 
       async function supprimer_element_panier(notre_couleur,notre_id_produit) {
-        const panier/*: ElementPanier[] */ = obtenir_local_storage_panier();
+        const panier/*: ElementPanier[] */ = util.recuperer_local_storage_panier();
         for (const i in panier) {
           if (panier[i].id_produit == notre_id_produit && panier[i].couleur == notre_couleur) {
             // delete panier[i]; /* panier[i] = null; */
@@ -230,7 +213,7 @@ async function main() {
       )
       {
         // Tout est bon!
-        const panier = obtenir_local_storage_panier();
+        const panier = util.recuperer_local_storage_panier();
         evenement.preventDefault();
         const donnees = await passer_commande(infos_formulaire, panier);
         console.log("donnees:", donnees.orderId);

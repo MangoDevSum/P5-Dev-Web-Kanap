@@ -8,7 +8,7 @@ async function main() {
 }
 
   function obtenir_no_commande() {
-    return util.get_url_param("commande");
+    return util.recuperer_url_param("commande");
   }
 
 document.addEventListener("DOMContentLoaded", async () => {

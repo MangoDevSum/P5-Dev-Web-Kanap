@@ -8,16 +8,18 @@ async function main() {
 
   async function remplir_produit() {
     const id_produit = obtenir_id();
-    const donnees = await recuperer_produit(id_produit);
-    inserer_donnees_dans_html(donnees);
+    const json_produit = await recuperer_produit(id_produit);
+    inserer_donnees_dans_html(json_produit);
   }
 
     function obtenir_id() {
-      return util.get_url_param("id");
+      const id = util.recuperer_url_param("id");
+      return id;
     }
 
     async function recuperer_produit(id_produit) {
-      return await util.api_get(`/${id_produit}`);
+      const json = await util.api_get(`/${id_produit}`);
+      return json;
     }
 
     function inserer_donnees_dans_html(produit) {
@@ -43,7 +45,7 @@ async function main() {
       for(const couleur of produit.colors) {
         // <option value="vert">vert</option>
         const option = document.createElement("option");
-        option.value = couleur;
+        option.setAttribute("value", couleur);
         option.append(couleur);
         $("#colors").append(option);
       }
@@ -91,15 +93,7 @@ async function main() {
         // Utilisation de localStorage:
 
         // 1. On récupère l'objet à déstringifier ("if any" / si jamais il y en un)
-        let panier_actuel;
-          // Est-ce que le panier existe déjà ?
-          if (localStorage.panier != undefined) { // Si oui,
-            // on le récupère en le "dé-stringifiant"
-            panier_actuel = JSON.parse(localStorage.panier);
-          } else { // sinon,
-            // on se fait un tout nouveau panier vide ({} == objet vide, [] == tableau vide).
-            panier_actuel = [];
-          }
+        const panier_actuel = util.recuperer_local_storage_panier();
 
         // 2. On lui rajoute des trucs
         const nouveau_panier = ajouter_au_panier(panier_actuel, id_produit, couleur, nbre_articles);
