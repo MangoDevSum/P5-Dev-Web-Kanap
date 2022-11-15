@@ -1,18 +1,21 @@
+// Fonctions auxiliaires
 import * as util from "./utilitaires.js"
 import { $ } from "./utilitaires.js"
 
+// Définition d'une fonction main() qu'on appellera en fin de fichier
 async function main() {
   const panier = util.recuperer_local_storage_panier();
   await remplir_html_panier(panier);
   listeners_formulaire();
 }
 
+  // Etapes pour afficher le panier
   async function remplir_html_panier(panier /*: ElementPanier[] */) {
     let total_articles = 0;
     let prix_total = 0;
     const articles = [];
     for (const element/* : ElementPanier */ of panier) {
-      const produit = await recuperer_produit(element.id_produit);
+      const produit = await util.recuperer_produit(element.id_produit);
 
       const article = fabriquer_article(produit, element.couleur, element.quantite);
       articles.push(article);
@@ -29,12 +32,6 @@ async function main() {
     ;
     $("#totalPrice").innerText = prix_virgule;
   }
-
-    async function recuperer_produit(id_produit) {
-        const response = await fetch(`http://localhost:3000/api/products/${id_produit}`);
-        const donnees = await response.json();
-        return donnees;
-    }
 
     /* <article class="cart__item" data-id="{product-ID}" data-color="{product-color}">
       <div class="cart__item__img">
@@ -57,6 +54,8 @@ async function main() {
         </div>
       </div>
     </article> */
+
+    // Convertir un produit en code html correspondant
     function fabriquer_article(produit, couleur, quantite) {
       const prix_en_euros =
         Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' })
@@ -127,6 +126,7 @@ async function main() {
       return article;
     }
 
+      // Mettre à jour la quantité dans le panier
       async function changer_qte_element_panier(notre_couleur, notre_id_produit, nouvelle_qte) {
         const panier/*: ElementPanier[] */ = util.recuperer_local_storage_panier();
         for (const element/*: ElementPanier */ of panier) {
@@ -138,23 +138,27 @@ async function main() {
         await remplir_html_panier(panier);
       }
 
-      async function supprimer_element_panier(notre_couleur,notre_id_produit) {
+      // Retirer un article du panier
+      async function supprimer_element_panier(notre_couleur, notre_id_produit) {
         const panier/*: ElementPanier[] */ = util.recuperer_local_storage_panier();
         for (const i in panier) {
           if (panier[i].id_produit == notre_id_produit && panier[i].couleur == notre_couleur) {
             // delete panier[i]; /* panier[i] = null; */
             panier.splice(i, 1);
+            break;
           }
         }
-        localStorage.panier = JSON.stringify(panier);
+        util.sauvegarder_local_storage_panier(panier);
         await remplir_html_panier(panier);
       }
 
+  // Gestion du formulaire de contact
   function listeners_formulaire() {
     const formulaire = $(".cart__order__form");
     formulaire.addEventListener("submit", gerer_submit_formulaire);
   }
 
+    // Filtrage du contenu des champs du formulaire (Regex)
     async function gerer_submit_formulaire(evenement) {
       const infos_formulaire = lire_infos_formulaire();
       console.log(infos_formulaire);
@@ -212,7 +216,7 @@ async function main() {
         && email_est_valide
       )
       {
-        // Tout est bon!
+        // Quand tout est validé, on envoie la commande:
         const panier = util.recuperer_local_storage_panier();
         evenement.preventDefault();
         const donnees = await passer_commande(infos_formulaire, panier);
@@ -220,7 +224,7 @@ async function main() {
         window.location = `./confirmation.html?commande=${donnees.orderId}`;
 
       } else {
-        // Empêcher le submit de "go through" / s'effectuer.
+        // Empêcher le submit de "go through"/ s'effectuer.
         evenement.preventDefault();
       }
     }
@@ -237,6 +241,7 @@ async function main() {
         return contact;
       }
 
+        // Requête POST pour passer commande
         async function passer_commande(infos_formulaire, panier) {
             const id_produits = [];
             for (const element_panier of panier) {
@@ -251,6 +256,7 @@ async function main() {
             return donnees;
         }
 
+// Appel à la fonction main()
 document.addEventListener("DOMContentLoaded", async () => {
   await main();
 }, false);
