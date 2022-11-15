@@ -70,6 +70,6 @@ export function sauvegarder_local_storage_panier(panier) {
  * elle retourne l'objet produit correspondant
 **/
 export async function recuperer_produit(id_produit) {
-  const json_produit = await util.api_get(`/${id_produit}`);
+  const json_produit = await api_get(`/${id_produit}`);
   return json_produit;
 }

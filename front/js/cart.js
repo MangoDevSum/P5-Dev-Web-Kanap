@@ -10,11 +10,11 @@ async function main() {
 }
 
   // Etapes pour afficher le panier
-  async function remplir_html_panier(panier /*: ElementPanier[] */) {
+  async function remplir_html_panier(panier) {
     let total_articles = 0;
     let prix_total = 0;
     const articles = [];
-    for (const element/* : ElementPanier */ of panier) {
+    for (const element of panier) {
       const produit = await util.recuperer_produit(element.id_produit);
 
       const article = fabriquer_article(produit, element.couleur, element.quantite);
@@ -128,8 +128,8 @@ async function main() {
 
       // Mettre à jour la quantité dans le panier
       async function changer_qte_element_panier(notre_couleur, notre_id_produit, nouvelle_qte) {
-        const panier/*: ElementPanier[] */ = util.recuperer_local_storage_panier();
-        for (const element/*: ElementPanier */ of panier) {
+        const panier = util.recuperer_local_storage_panier();
+        for (const element of panier) {
           if (element.id_produit == notre_id_produit && element.couleur == notre_couleur) {
             element.quantite = nouvelle_qte;
           }
@@ -140,10 +140,12 @@ async function main() {
 
       // Retirer un article du panier
       async function supprimer_element_panier(notre_couleur, notre_id_produit) {
-        const panier/*: ElementPanier[] */ = util.recuperer_local_storage_panier();
+        const panier = util.recuperer_local_storage_panier();
+        // Où se trouve l'entrée du panier correspondante?
         for (const i in panier) {
           if (panier[i].id_produit == notre_id_produit && panier[i].couleur == notre_couleur) {
-            // delete panier[i]; /* panier[i] = null; */
+            // On supprime cette entrée, mais comme `delete panier[i]` la laisse à `null` (panier[i] = null),
+            // il nous faut à la place utiliser `splice()`
             panier.splice(i, 1);
             break;
           }
@@ -160,7 +162,7 @@ async function main() {
 
     // Filtrage du contenu des champs du formulaire (Regex)
     async function gerer_submit_formulaire(evenement) {
-      // Empêcher le submit de "go through"/ s'effectuer.
+      // Empêcher le submit de "go through"/s'effectuer.
       evenement.preventDefault();
 
       const infos_formulaire = lire_infos_formulaire();
@@ -169,9 +171,12 @@ async function main() {
       const regle_adresse_ou_ville = /^.+$/;
       const regle_email = /^[a-z0-9\._]+@[a-z]+\.[a-z]+$/i;
 
+      let tout_bon = true;
+
       const prenom_est_valide = regle_prenom_ou_nom.test(infos_formulaire.firstName);
       if (prenom_est_valide == false) {
         $("#firstNameErrorMsg").innerText = "Veuillez écrire un prénom valide";
+        tout_bon = false;
       } else {
         $("#firstNameErrorMsg").innerText = "";
       }
@@ -179,6 +184,7 @@ async function main() {
       const nom_est_valide = regle_prenom_ou_nom.test(infos_formulaire.lastName);
       if (nom_est_valide == false) {
         $("#lastNameErrorMsg").innerText = "Veuillez écrire un nom valide";
+        tout_bon = false;
       } else {
         $("#lastNameErrorMsg").innerText = "";
       }
@@ -186,6 +192,7 @@ async function main() {
       const adresse_est_valide = regle_adresse_ou_ville.test(infos_formulaire.address);
       if (adresse_est_valide == false) {
         $("#addressErrorMsg").innerText = "Veuillez fournir une adresse";
+        tout_bon = false;
       } else {
         $("#addressErrorMsg").innerText = "";
       }
@@ -193,6 +200,7 @@ async function main() {
       const ville_est_valide = regle_adresse_ou_ville.test(infos_formulaire.city);
       if (ville_est_valide == false) {
         $("#cityErrorMsg").innerText = "Veuillez fournir une ville";
+        tout_bon = false;
       } else {
         $("#cityErrorMsg").innerText = "";
       }
@@ -200,20 +208,16 @@ async function main() {
       const email_est_valide = regle_email.test(infos_formulaire.email);
       if (email_est_valide == false) {
         $("#emailErrorMsg").innerText = "Veuillez écrire une adresse email valide";
+        tout_bon = false;
       } else {
         $("#emailErrorMsg").innerText = "";
       }
 
-      if (true
-        && prenom_est_valide
-        && nom_est_valide
-        && adresse_est_valide
-        && ville_est_valide
-        && email_est_valide
-      )
-      {
-        // Quand tout est validé, on envoie la commande:
+      if (tout_bon) {
+        // Quand tout est validé, on passe la commande:
         const donnees = await passer_commande(infos_formulaire);
+        // On en obtient le numéro de commande, avec lequel on redirige
+        // l'utilisateur vers la page confirmation
         window.location = `./confirmation.html?commande=${donnees.orderId}`;
       } else {
         // Sinon, on ne redirige pas
@@ -234,18 +238,18 @@ async function main() {
 
         // Requête POST pour passer commande
         async function passer_commande(infos_formulaire) {
-            const panier = util.recuperer_local_storage_panier();
-            const id_produits = [];
-            for (const element_panier of panier) {
-                // Formulaire ignore couleur, voire quantité ????
-                id_produits.push(element_panier.id_produit);
-            }
-            const objet_a_envoyer = {
-              contact: infos_formulaire,
-              products: id_produits,
-            };
-            const donnees = await util.api_post("/order", objet_a_envoyer);
-            return donnees;
+          const panier = util.recuperer_local_storage_panier();
+          const id_produits = [];
+          for (const element_panier of panier) {
+            // Formulaire ignore couleur, voire quantité ????
+            id_produits.push(element_panier.id_produit);
+          }
+          const objet_a_envoyer = {
+            contact: infos_formulaire,
+            products: id_produits,
+          };
+          const donnees = await util.api_post("/order", objet_a_envoyer);
+          return donnees;
         }
 
 // Appel à la fonction main()
