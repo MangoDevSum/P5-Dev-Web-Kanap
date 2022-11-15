@@ -5,7 +5,6 @@ import { $ } from "./utilitaires.js"
 // On obtient le numéro de commande puis on l'affiche
 async function main() {
   const no_commande = obtenir_no_commande();
-  console.log("no_commande", no_commande);
   $("#orderId").append(no_commande);
 }
 

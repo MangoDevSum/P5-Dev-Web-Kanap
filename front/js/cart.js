@@ -160,16 +160,16 @@ async function main() {
 
     // Filtrage du contenu des champs du formulaire (Regex)
     async function gerer_submit_formulaire(evenement) {
+      // Empêcher le submit de "go through"/ s'effectuer.
+      evenement.preventDefault();
+
       const infos_formulaire = lire_infos_formulaire();
-      console.log(infos_formulaire);
-      console.log(infos_formulaire.firstName);
 
       const regle_prenom_ou_nom = /^[^0-9]+$/;
       const regle_adresse_ou_ville = /^.+$/;
       const regle_email = /^[a-z0-9\._]+@[a-z]+\.[a-z]+$/i;
 
       const prenom_est_valide = regle_prenom_ou_nom.test(infos_formulaire.firstName);
-      console.log("prenom_est_valide", prenom_est_valide);
       if (prenom_est_valide == false) {
         $("#firstNameErrorMsg").innerText = "Veuillez écrire un prénom valide";
       } else {
@@ -177,7 +177,6 @@ async function main() {
       }
 
       const nom_est_valide = regle_prenom_ou_nom.test(infos_formulaire.lastName);
-      console.log("nom_est_valide", nom_est_valide);
       if (nom_est_valide == false) {
         $("#lastNameErrorMsg").innerText = "Veuillez écrire un nom valide";
       } else {
@@ -185,7 +184,6 @@ async function main() {
       }
 
       const adresse_est_valide = regle_adresse_ou_ville.test(infos_formulaire.address);
-      console.log("adresse_est_valide", adresse_est_valide);
       if (adresse_est_valide == false) {
         $("#addressErrorMsg").innerText = "Veuillez fournir une adresse";
       } else {
@@ -193,7 +191,6 @@ async function main() {
       }
 
       const ville_est_valide = regle_adresse_ou_ville.test(infos_formulaire.city);
-      console.log("ville_est_valide", ville_est_valide);
       if (ville_est_valide == false) {
         $("#cityErrorMsg").innerText = "Veuillez fournir une ville";
       } else {
@@ -201,7 +198,6 @@ async function main() {
       }
 
       const email_est_valide = regle_email.test(infos_formulaire.email);
-      console.log("email_est_valide", email_est_valide);
       if (email_est_valide == false) {
         $("#emailErrorMsg").innerText = "Veuillez écrire une adresse email valide";
       } else {
@@ -217,15 +213,10 @@ async function main() {
       )
       {
         // Quand tout est validé, on envoie la commande:
-        const panier = util.recuperer_local_storage_panier();
-        evenement.preventDefault();
-        const donnees = await passer_commande(infos_formulaire, panier);
-        console.log("donnees:", donnees.orderId);
+        const donnees = await passer_commande(infos_formulaire);
         window.location = `./confirmation.html?commande=${donnees.orderId}`;
-
       } else {
-        // Empêcher le submit de "go through"/ s'effectuer.
-        evenement.preventDefault();
+        // Sinon, on ne redirige pas
       }
     }
 
@@ -242,7 +233,8 @@ async function main() {
       }
 
         // Requête POST pour passer commande
-        async function passer_commande(infos_formulaire, panier) {
+        async function passer_commande(infos_formulaire) {
+            const panier = util.recuperer_local_storage_panier();
             const id_produits = [];
             for (const element_panier of panier) {
                 // Formulaire ignore couleur, voire quantité ????

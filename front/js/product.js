@@ -65,7 +65,6 @@ async function main() {
       // Ici on ne peut hélas passer le `id_produit` comme argument, du coup il nous faut
       // le réobtenir comme nous l'avions déjà fait ligne ~13.
       const id_produit = obtenir_id();
-      console.log("id_produit:", id_produit);
 
       // .value : On obtient ce qu' il y a à l'intérieur de la case, /!\ sous forme de string /!\
       const nbre_articles_str = $("#quantity").value;
@@ -75,7 +74,6 @@ async function main() {
         // alert("Veuillez choisir le nombre d'articles à ajouter.");
         return;
       }
-      console.log("nbre_articles:", nbre_articles);
 
       const choix_couleurs = $("#colors");
       if (choix_couleurs.selectedIndex == 0) {
@@ -85,7 +83,6 @@ async function main() {
       }
       // Formule pour obtenir le string dans un choix déroulant (select).
       const couleur = choix_couleurs.options[choix_couleurs.selectedIndex].value;
-      console.log("couleur:", couleur);
 
       // On peut enfin insérer dans le panier les infos obtenues
       maj_du_local_storage_panier(couleur, id_produit, nbre_articles);
@@ -115,20 +112,9 @@ async function main() {
         function ajouter_au_panier(panier, notre_id_produit, notre_couleur, nbre_articles) {
           // On regarde si une entrée ayant le même id et couleur est déjà présente
           // (et si oui, où)
-          let position = -1;
-          for (const [i, element] of Object.entries(panier)) {
-            if (element.id_produit == notre_id_produit && element.couleur == notre_couleur) {
-              position = i;
-              break;
-            }
-          }
-          // Ou bien:
-          {
-            const position = panier.findIndex(element => {
-              return element.id_produit == notre_id_produit && element.couleur == notre_couleur;
-            });
-          }
-
+          const position = panier.findIndex(element => {
+            return element.id_produit == notre_id_produit && element.couleur == notre_couleur;
+          });
           if (position == -1) {
             // entrée non trouvée, on en crée une nouvelle.
             panier.push({
@@ -148,15 +134,3 @@ async function main() {
 document.addEventListener("DOMContentLoaded", async () => {
   await main();
 }, false);
-
-/*
-- ☑ Panier partie 1 — ajouter au panier:
-     - ☑ récupérer infos du produit lors du clic
-     - ☑ fonction pour insérer des infos produit dans le panier
-  -  🔲 Panier partie 2 - afficher le panier:
-     - ☑ récupérer infos du panier (très facile)
-     - ☑ les afficher (un peu fastidieux, mais pas difficile (createElement, append, etc.)
-        - ☑ utiliser createElement à la place de innerHTML
-        - 🔲 mettre à jour aussi le prix et quantités totaux.
-     - 🔲 au niveau de l'affichage de ce panier, permettre des modifs ultérieures ("supprimer l'élément ou modifier la quantité")
-*/
