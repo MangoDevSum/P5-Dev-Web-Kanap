@@ -167,9 +167,10 @@ async function main() {
 
       const infos_formulaire = lire_infos_formulaire();
 
-      const regle_prenom_ou_nom = /^[^0-9]+$/;
-      const regle_adresse_ou_ville = /^.+$/;
-      const regle_email = /^[a-z0-9\._]+@[a-z]+\.[a-z]+$/i;
+      const regle_prenom_ou_nom = /^[A-Z][a-zA-Z\xC0-\xFF '-]{0,99}$/;
+      const regle_adresse       = /^[a-z\d\xC0-\xFF ,.'-]+$/i;
+      const regle_ville         = /^[A-Z][a-zA-Z\xC0-\xFF ,.'-]{0,99}$/;
+      const regle_email         = /^[a-z0-9\._]+@[a-z]+\.[a-z]+$/i;
 
       let tout_bon = true;
 
@@ -189,17 +190,17 @@ async function main() {
         $("#lastNameErrorMsg").innerText = "";
       }
 
-      const adresse_est_valide = regle_adresse_ou_ville.test(infos_formulaire.address);
+      const adresse_est_valide = regle_adresse.test(infos_formulaire.address);
       if (adresse_est_valide == false) {
-        $("#addressErrorMsg").innerText = "Veuillez fournir une adresse";
+        $("#addressErrorMsg").innerText = "Veuillez fournir une adresse valide";
         tout_bon = false;
       } else {
         $("#addressErrorMsg").innerText = "";
       }
 
-      const ville_est_valide = regle_adresse_ou_ville.test(infos_formulaire.city);
+      const ville_est_valide = regle_ville.test(infos_formulaire.city);
       if (ville_est_valide == false) {
-        $("#cityErrorMsg").innerText = "Veuillez fournir une ville";
+        $("#cityErrorMsg").innerText = "Veuillez fournir une ville valide";
         tout_bon = false;
       } else {
         $("#cityErrorMsg").innerText = "";
