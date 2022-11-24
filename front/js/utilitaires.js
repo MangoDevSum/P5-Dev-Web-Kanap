@@ -46,7 +46,7 @@ export function recuperer_url_param(nom_du_parametre) {
   return url.searchParams.get(nom_du_parametre);
 }
 
-// localStorage -> JSON.parse
+// On charge le dernier panier sauvegardé dans le local storage.
 export function recuperer_local_storage_panier() {
   let panier_actuel;
   // Est-ce que le panier existe déjà ?
@@ -60,7 +60,7 @@ export function recuperer_local_storage_panier() {
   return panier_actuel;
 }
 
-// JSON.stringify -> localStorage
+// On sauvegarde dans le local storage le panier donné.
 export function sauvegarder_local_storage_panier(panier) {
   localStorage.panier = JSON.stringify(panier);
 }

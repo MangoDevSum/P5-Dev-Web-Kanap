@@ -2,7 +2,7 @@
 import * as util from "./utilitaires.js"
 import { $ } from "./utilitaires.js"
 
-// Définition d'une fonction main() qu'on appellera en fin de fichier
+// Affichage du contenu du panier ainsi que du formulaire de contact une fois le DOM chargé
 async function main() {
   const panier = util.recuperer_local_storage_panier();
   await remplir_html_panier(panier);
@@ -162,15 +162,22 @@ async function main() {
 
     // Filtrage du contenu des champs du formulaire (Regex)
     async function gerer_submit_formulaire(evenement) {
-      // Empêcher le submit de "go through"/s'effectuer.
+      // Empêcher le submit de "go through"/s'effectuer,
+      // la redirection par défaut n'étant pas souhaitable.
       evenement.preventDefault();
 
       const infos_formulaire = lire_infos_formulaire();
 
-      const regle_prenom_ou_nom = /^[A-Z][a-zA-Z\xC0-\xFF '-]{0,99}$/;
-      const regle_adresse       = /^[a-z\d\xC0-\xFF ,.'-]+$/i;
-      const regle_ville         = /^[A-Z][a-zA-Z\xC0-\xFF ,.'-]{0,99}$/;
-      const regle_email         = /^[a-z0-9\._]+@[a-z]+\.[a-z]+$/i;
+      // Regex qui accepte les noms ou prénoms composés
+      // (avec apostrophes ou tirets, sans chiffres; C0-FF couvrant les caractères accentués)
+      const regle_prenom_ou_nom = /^[a-z][a-z\xC0-\xFF '-]{0,49}$/i;
+      // Idem, mais en autorisant aussi chiffres, points et virgules.
+      const regle_adresse       = /^[a-z\d][a-z\d\xC0-\xFF ,.'-]*$/i;
+      // Comme les adresses, mais sans les chiffres.
+      const regle_ville         = /^[a-z][a-z\xC0-\xFF ,.'-]{0,49}$/i;
+      // avant @: alphanumérique ou . ou _
+      // après @: un nom de domaine.
+      const regle_email         = /^[a-z\d._]+@[a-z]+\.[a-z]+$/i;
 
       let tout_bon = true;
 
@@ -225,6 +232,7 @@ async function main() {
       }
     }
 
+      // Création de l'objet contact à partir des données du formulaire
       function lire_infos_formulaire() {
         const contact = {
           firstName: $("#firstName").value,
@@ -242,7 +250,7 @@ async function main() {
           const panier = util.recuperer_local_storage_panier();
           const id_produits = [];
           for (const element_panier of panier) {
-            // Formulaire ignore couleur, voire quantité ????
+            // (le formulaire ignore la couleur et la quantité)
             id_produits.push(element_panier.id_produit);
           }
           const objet_a_envoyer = {

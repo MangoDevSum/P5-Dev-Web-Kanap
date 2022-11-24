@@ -2,10 +2,11 @@
 import * as util from "./utilitaires.js"
 import { $ } from "./utilitaires.js"
 
-// Définition d'une fonction main() qu'on appellera en fin de fichier
+// Remplir la page produit une fois que celle-ci est chargée,
+// et rendre fonctionnel le clic d'ajout au panier.
 async function main() {
   await remplir_produit();
-  ajouter_listener();
+  ajouter_listener_bouton_panier();
 }
 
   // Etapes pour afficher une fiche produit
@@ -52,7 +53,7 @@ async function main() {
     }
 
   // Mise en place de la gestion du clic sur le bouton "Ajouter au panier"
-  function ajouter_listener() {
+  function ajouter_listener_bouton_panier() {
     $("#addToCart").addEventListener("click", gerer_clic_panier);
   }
 

@@ -3,6 +3,7 @@ import * as util from "./utilitaires.js"
 import { $ } from "./utilitaires.js"
 
 // Définition d'une fonction main() qu'on appellera en fin de fichier
+// Chargement des différents produits sur la page une fois que le DOM a été chargé
 async function main() {
   await remplir_accueil();
 }
